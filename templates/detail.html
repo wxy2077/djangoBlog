@@ -1,0 +1,778 @@
+{% extends 'base.html' %}
+{% load custom_tag %}
+{% load static %}
+{% block title %}{{ article.title }} | {% endblock %}
+
+{% block banner %}
+    <div class="bg-cover pd-header post-cover">
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <div class="brand">
+                        <div class="description center-align post-title">
+                            {{ article.title }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/tocbot.css">
+    <link rel="stylesheet" href="/static/css/prism-a11y-dark.css">
+    <link rel="stylesheet" href="/static/css/monokai.css">
+    <link rel="stylesheet" href="/static/css/detail-comments.css">
+{% endblock %}
+
+{% block custom_style %}
+    <style>
+        #articleContent h1::before,
+        #articleContent h2::before,
+        #articleContent h3::before,
+        #articleContent h4::before,
+        #articleContent h5::before,
+        #articleContent h6::before {
+            display: block;
+            content: " ";
+            height: 100px;
+            margin-top: -100px;
+            visibility: hidden;
+        }
+
+        #articleContent :focus {
+            outline: none;
+        }
+
+        .toc-fixed {
+            position: fixed;
+            top: 64px;
+        }
+
+        .toc-widget {
+            padding-left: 20px;
+        }
+
+        .toc-widget .toc-title {
+            margin: 35px 0 15px 0;
+            padding-left: 17px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            line-height: 1.5rem;
+        }
+
+        .toc-widget ol {
+            padding: 0;
+            list-style: none;
+        }
+
+        #toc-content ol {
+            padding-left: 10px;
+        }
+
+        #toc-content ol li {
+            padding-left: 10px;
+        }
+
+        #toc-content .toc-link:hover {
+            color: #42b983;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .is-active-link {
+            color: #42b983;
+        }
+
+        #toc-content .is-active-link::before {
+            background-color: #42b983;
+        }
+
+        #floating-toc-btn {
+            position: fixed;
+            right: 15px;
+            bottom: 76px;
+            padding-top: 15px;
+            margin-bottom: 0;
+            z-index: 998;
+        }
+
+        #floating-toc-btn .btn-floating {
+            width: 48px;
+            height: 48px;
+        }
+
+        #floating-toc-btn .btn-floating i {
+            line-height: 48px;
+            font-size: 1.4rem;
+        }
+    </style>
+{% endblock %}
+
+{% block contents %}
+    <main class="post-container content">
+        <style>
+            #articleContent h1::before,
+            #articleContent h2::before,
+            #articleContent h3::before,
+            #articleContent h4::before,
+            #articleContent h5::before,
+            #articleContent h6::before {
+                display: block;
+                content: " ";
+                height: 100px;
+                margin-top: -100px;
+                visibility: hidden;
+            }
+
+            #articleContent :focus {
+                outline: none;
+            }
+
+            .toc-fixed {
+                position: fixed;
+                top: 64px;
+            }
+
+            .toc-widget {
+                padding-left: 20px;
+            }
+
+            .toc-widget .toc-title {
+                margin: 35px 0 15px 0;
+                padding-left: 17px;
+                font-size: 1.5rem;
+                font-weight: bold;
+                line-height: 1.5rem;
+            }
+
+            .toc-widget ol {
+                padding: 0;
+                list-style: none;
+            }
+
+            #toc-content ol {
+                padding-left: 10px;
+            }
+
+            #toc-content ol li {
+                padding-left: 10px;
+            }
+
+            #toc-content .toc-link:hover {
+                color: #42b983;
+                font-weight: 700;
+                text-decoration: underline;
+            }
+
+            #toc-content .toc-link::before {
+                background-color: transparent;
+                max-height: 25px;
+            }
+
+            #toc-content .is-active-link {
+                color: #42b983;
+            }
+
+            #toc-content .is-active-link::before {
+                background-color: #42b983;
+            }
+
+            #floating-toc-btn {
+                position: fixed;
+                right: 15px;
+                bottom: 76px;
+                padding-top: 15px;
+                margin-bottom: 0;
+                z-index: 998;
+            }
+
+            #floating-toc-btn .btn-floating {
+                width: 48px;
+                height: 48px;
+            }
+
+            #floating-toc-btn .btn-floating i {
+                line-height: 48px;
+                font-size: 1.4rem;
+            }
+        </style>
+        <div class="row">
+            <div id="main-content" class="col s12 m12 l9">
+                <!-- 文章内容详情 -->
+                <div id="artDetail">
+                    <div class="card">
+                        <div class="card-content article-info">
+                            <div class="row tag-cate">
+                                <div class="col s7">
+                                    <div class="article-tag">
+                                        {% for tag in  article.tag.all %}
+                                            <a href="{% url 'article_tag' tag %}">
+                                                <span class="chip tag-color">{{ tag }}</span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col s5 right-align">
+                                    <div class="post-cate">
+                                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                                        <a href="{% url 'article_category' article.category %}" class="post-category">
+                                            {{ article.category }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="post-info">
+                                <div class="post-date info-break-policy">
+                                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                                    {{ article.add_time | date:'Y-m-d' }}
+                                </div>
+                                <div class="post-date info-break-policy">
+                                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                                    {{ article.update_time | date:'Y-m-d' }}
+                                </div>
+                                <div class="info-break-policy">
+                                    <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                                    {{ article.click_count }}
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="clearfix">
+                        <div class="card-content article-card-content">
+                            <div id="articleContent">
+                                {{ detail_html | custom_markdown| safe }}
+                            </div>
+                            <hr/>
+                            <div class="reprint" id="reprint-statement">
+                                <div class="reprint__author">
+                                <span class="reprint-meta" style="font-weight: bold;">
+                                    <i class="fas fa-user">
+                                        文章作者:
+                                    </i>
+                                </span>
+                                    <span class="reprint-info">
+                                    <a href="{{ SITE_DOMAIN_URL }}" rel="external nofollow noreferrer">王小右</a>
+                                </span>
+                                </div>
+                                <div class="reprint__type">
+                                <span class="reprint-meta" style="font-weight: bold;">
+                                    <i class="fas fa-link">
+                                        文章链接:
+                                    </i>
+                                </span>
+                                    <span class="reprint-info">
+                                    <a href="{{ SITE_DOMAIN_URL }}/article/{{ article.article_url }}">{{ SITE_DOMAIN_URL }}/article/{{ article.article_url }}</a>
+                                </span>
+                                </div>
+                                <div class="reprint__notice">
+                                    <span class="reprint-meta" style="font-weight: bold;">
+                                        <i class="fas fa-copyright">
+                                            版权声明:
+                                        </i>
+                                    </span>
+                                    <span class="reprint-info">
+                                        咳咳想白嫖文章？本文章著作权归作者所有，任何形式的转载都请注明出处。
+                                        <a href="{{ SITE_DOMAIN_URL }}" target="_blank">{{ SITE_DOMAIN_URL }}</a>
+                                        !
+                                    </span>
+                                </div>
+                            </div>
+                            <script async defer>
+                                document.addEventListener("copy", function (e) {
+                                    let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+                                    M.toast({html: toastHTML})
+                                });
+
+                                function navToReprintStatement() {
+                                    $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+                                }
+                            </script>
+                            <div class="tag_share" style="display: block;">
+                                <div class="post-meta__tag-list" style="display: inline-block;">
+
+                                    <div class="article-tag">
+                                        {% for tag in article.tag.all %}
+                                            <a href="/tags/{{ tag.name }}/">
+                                                <span class="chip tag-color">{{ tag.name }}</span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>
+                                <div class="post_share"
+                                     style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                                    {# 文章分享  #}
+                                    {#                                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">#}
+                                    {#                                    <div id="article-share">#}
+                                    {#                                        <div class="social-share" data-sites="qq,wechat,weibo"#}
+                                    {#                                             data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>#}
+                                    {#                                        <script src="/libs/share/js/social-share.min.js"></script>#}
+                                    {##}
+                                    {#                                    </div>#}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if article.open_comment %}
+                        <div class="card valine-card aos-init" data-aos="fade-up">
+                            <div class="comment_headling"
+                                 style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+                                <div>
+                                    <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+                                    <span>评论</span>
+                                </div>
+                                <!-- Github第三方登录 -->
+                                <div id="github-info">
+                                    <a href="{{ github_auth_url }}">
+
+                                    <span class="github-icon"><svg t="1594172396082" class="icon"
+                                                                   viewBox="0 0 1049 1024" version="1.1"
+                                                                   xmlns="http://www.w3.org/2000/svg" p-id="1846"
+                                                                   width="200" height="200"><path
+                                            d="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z"
+                                            fill="#191717" p-id="1847"></path><path
+                                            d="M199.040177 753.571326c-0.869171 2.607513-5.215026 3.476684-8.691711 1.738342s-6.084198-5.215026-4.345855-7.82254c0.869171-2.607513 5.215026-3.476684 8.691711-1.738342s5.215026 5.215026 4.345855 7.82254z m-6.953369-4.345856M219.900283 777.038945c-2.607513 2.607513-7.82254 0.869171-10.430053-2.607514-3.476684-3.476684-4.345855-8.691711-1.738342-11.299224 2.607513-2.607513 6.953369-0.869171 10.430053 2.607514 3.476684 4.345855 4.345855 9.560882 1.738342 11.299224z m-5.215026-5.215027M240.760389 807.459932c-3.476684 2.607513-8.691711 0-11.299224-4.345855-3.476684-4.345855-3.476684-10.430053 0-12.168395 3.476684-2.607513 8.691711 0 11.299224 4.345855 3.476684 4.345855 3.476684 9.560882 0 12.168395z m0 0M269.443034 837.011749c-2.607513 3.476684-8.691711 2.607513-13.906737-1.738342-4.345855-4.345855-6.084198-10.430053-2.607513-13.037566 2.607513-3.476684 8.691711-2.607513 13.906737 1.738342 4.345855 3.476684 5.215026 9.560882 2.607513 13.037566z m0 0M308.555733 853.526c-0.869171 4.345855-6.953369 6.084198-13.037566 4.345855-6.084198-1.738342-9.560882-6.953369-8.691711-10.430053 0.869171-4.345855 6.953369-6.084198 13.037566-4.345855 6.084198 1.738342 9.560882 6.084198 8.691711 10.430053z m0 0M351.145116 857.002684c0 4.345855-5.215026 7.82254-11.299224 7.82254-6.084198 0-11.299224-3.476684-11.299224-7.82254s5.215026-7.82254 11.299224-7.82254c6.084198 0 11.299224 3.476684 11.299224 7.82254z m0 0M391.126986 850.049315c0.869171 4.345855-3.476684 8.691711-9.560882 9.560882-6.084198 0.869171-11.299224-1.738342-12.168395-6.084197-0.869171-4.345855 3.476684-8.691711 9.560881-9.560882 6.084198-0.869171 11.299224 1.738342 12.168396 6.084197z m0 0"
+                                            fill="#191717" p-id="1848"></path></svg></span>
+                                        <span>Github登录</span>
+
+                                    </a>
+                                </div>
+
+                            </div>
+                            <div id="comments" class="card-content">
+                                <div class="vedit">
+                                    <!-- 有个小坑 textarea 必须写在一行，不然鼠标初始焦点不对 -->
+                                    <textarea id="veditor" rows="3" cols="20" placeholder="登录后才能输入(限制100字以内)"
+                                              name="txt" readonly></textarea>
+
+                                    <div class="vctrl">
+                                        <button id="commit" type="button" title="Cmd|Ctrl+Enter">提交</button>
+                                        <span id="valueLen"> 还能输入 100 字 </span>
+                                        <span id="replyTipSpan"></span>
+                                    </div>
+                                </div>
+
+
+                                <div class="comments-list" id="show-commit">
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+
+
+                    <article id="prenext-posts" class="prev-next articles">
+                        <div class="row article-row">
+                            {#   相关文章推荐     #}
+
+                        </div>
+                    </article>
+                </div>
+                <script>
+                    $('#articleContent').on('copy', function (e) {
+                        // IE8 or earlier browser is 'undefined'
+                        if (typeof window.getSelection === 'undefined') return;
+
+                        var selection = window.getSelection();
+                        // if the selection is short let's not annoy our users.
+                        if (('' + selection).length < Number.parseInt('240')) {
+                            return;
+                        }
+
+                        // create a div outside of the visible area and fill it with the selected text.
+                        var bodyElement = document.getElementsByTagName('body')[0];
+                        var newdiv = document.createElement('div');
+                        newdiv.style.position = 'absolute';
+                        newdiv.style.left = '-99999px';
+                        bodyElement.appendChild(newdiv);
+                        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+                        // we need a <pre> tag workaround.
+                        // otherwise the text inside "pre" loses all the line breaks!
+                        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+                            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+                        }
+
+                        var url = document.location.href;
+                        newdiv.innerHTML += '<br />'
+                            + '来源: charmcode.cn<br />'
+                            + '文章作者: 王小右<br />'
+                            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+                            + '咳咳又想白嫖文章？本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+                        selection.selectAllChildren(newdiv);
+                        window.setTimeout(function () {
+                            bodyElement.removeChild(newdiv);
+                        }, 200);
+                    });
+                </script>
+                <!-- 代码块功能依赖 -->
+                <script type="text/javascript" src="{% static 'codeBlock/codeBlockFuction.js' %}"></script>
+                <!-- 代码语言 -->
+                <script type="text/javascript" src="{% static 'codeBlock/codeLang.js' %}"></script>
+                <!-- 代码块复制 -->
+                <script type="text/javascript" src="{% static 'codeBlock/codeCopy.js' %}"></script>
+                <!-- 代码块收缩 -->
+                <script type="text/javascript" src="{% static 'codeBlock/codeShrink.js' %}"></script>
+                <!-- 代码块折行 -->
+            </div>
+            <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+                <div class="toc-widget">
+                    <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+                    <div id="toc-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOC 悬浮按钮. -->
+        <div id="floating-toc-btn" class="hide-on-med-and-down">
+            <a class="btn-floating btn-large tag-color">
+                <i class="fas fa-list-ul"></i>
+            </a>
+        </div>
+        <script src="{% static 'js/tocbot.min.js' %}"></script>
+        <script>
+            $(function () {
+                tocbot.init({
+                    tocSelector: '#toc-content',
+                    contentSelector: '#articleContent',
+                    headingsOffset: -($(window).height() * 0.4 - 45),
+                    collapseDepth: Number('0'),
+                    headingSelector: 'h1, h2, h3, h4, h5'
+                });
+
+                // modify the toc link href to support Chinese.
+                let i = 0;
+                let tocHeading = 'toc-heading-';
+                $('#toc-content a').each(function () {
+                    $(this).attr('href', '#' + tocHeading + (++i));
+                });
+
+                // modify the heading title id to support Chinese.
+                i = 0;
+                $('#articleContent').children('h1, h2, h3, h4, h5').each(function () {
+                    $(this).attr('id', tocHeading + (++i));
+                });
+
+                // Set scroll toc fixed.
+                let tocHeight = parseInt($(window).height() * 0.4 - 64);
+                let $tocWidget = $('.toc-widget');
+                $(window).scroll(function () {
+                    let scroll = $(window).scrollTop();
+                    /* add post toc fixed. */
+                    if (scroll > tocHeight) {
+                        $tocWidget.addClass('toc-fixed');
+                    } else {
+                        $tocWidget.removeClass('toc-fixed');
+                    }
+                });
+
+
+                /* 修复文章卡片 div 的宽度. */
+                let fixPostCardWidth = function (srcId, targetId) {
+                    let srcDiv = $('#' + srcId);
+                    if (srcDiv.length === 0) {
+                        return;
+                    }
+
+                    let w = srcDiv.width();
+                    if (w >= 450) {
+                        w = w + 21;
+                    } else if (w >= 350 && w < 450) {
+                        w = w + 18;
+                    } else if (w >= 300 && w < 350) {
+                        w = w + 16;
+                    } else {
+                        w = w + 14;
+                    }
+                    $('#' + targetId).width(w);
+                };
+
+                // 切换TOC目录展开收缩的相关操作.
+                const expandedClass = 'expanded';
+                let $tocAside = $('#toc-aside');
+                let $mainContent = $('#main-content');
+                $('#floating-toc-btn .btn-floating').click(function () {
+                    if ($tocAside.hasClass(expandedClass)) {
+                        $tocAside.removeClass(expandedClass).hide();
+                        $mainContent.removeClass('l9');
+                    } else {
+                        $tocAside.addClass(expandedClass).show();
+                        $mainContent.addClass('l9');
+                    }
+                    fixPostCardWidth('artDetail', 'prenext-posts');
+                });
+
+            });
+        </script>
+
+        <!-- 评论提交请求 -->
+        <script type='text/javascript'>
+            /**
+             *
+             * 获取cookie工具函数
+             *
+             * */
+            function getCookie(c_name) {
+                if (document.cookie.length > 0) {
+                    let c_start = document.cookie.indexOf(c_name + "=");
+                    if (c_start !== -1) {
+                        c_start = c_start + c_name.length + 1;
+                        let c_end = document.cookie.indexOf(";", c_start);
+                        if (c_end === -1) c_end = document.cookie.length;
+                        return unescape(document.cookie.substring(c_start, c_end));
+                    }
+                }
+                return "";
+            }
+
+            /**
+             *
+             * 防抖工具函数
+             *
+             * */
+            function debounce(fun, delay) {
+                return function (args) {
+                    let that = this;
+                    let _args = args;
+                    clearTimeout(fun.id);
+                    fun.id = setTimeout(function () {
+                        fun.call(that, _args)
+                    }, delay)
+                }
+            }
+
+            /**
+             * 过滤输入数据工具函数
+             * author:CharmCode.cn
+             * */
+            function clearValue(v) {
+                v = v.trim();
+                // 去掉特殊字符
+                v = v.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+                v = v.replace(/[\#\$\%\^\&\*\{\}\:\"\L\<\>\?]/g, '');
+                // 多个空格|换行 替换成一个
+                v = v.replace(/[\s\n]{2,}/g, " ");
+                // 截取前100个字符
+                v = v.slice(0, 100);
+                return v
+
+            }
+
+            /**
+             * fetch函数封装
+             * author:CharmCode.cn
+             * */
+            function requests(path, method = "GET", data = {}, headers = {'content-type': 'application/json'}) {
+
+                method = method.toUpperCase();
+                // 默认请求头
+                let requestHeader = {
+                    headers,
+                    method
+                };
+
+                // 如果是get请求
+                if (method === "GET") {
+                    // 转换拼接get参数
+                    let esc = encodeURIComponent;
+                    let queryParams = Object.keys(data)
+                        .map(k => `${esc(k)}=${esc(data[k])}`)
+                        .join('&');
+                    if (queryParams) path += `?${queryParams}`;
+
+                } else {
+                    // 其他请求 放入body里面
+                    requestHeader.body = JSON.stringify(data)
+                }
+
+                // 可以在这封装一个回调函数，请求拦截
+
+                // 发送请求并返回 promise 对象 注意 fetch不会拦截其他异常请求️
+                return fetch(`${window.location.origin}${path}`, requestHeader).then(
+                    // 可在这里封装 响应拦截函数
+                    response => response.json()
+                )
+            }
+
+            function submitCommit(username, content, replayTip) {
+                let article_url = window.location.pathname.split("/").pop();
+
+                let csrf_cookie = getCookie("csrftoken");
+                requests(
+                    "/article/comment/",
+                    "POST",
+                    {
+                        github_username: username,
+                        article_url: article_url,
+                        comment_content: content
+                    },
+                    {
+                        'content-type': 'application/json',
+                        'X-CSRFToken': csrf_cookie
+                    }
+                ).then((data) => {
+                    replayTip(data.code)
+
+                })
+            }
+
+
+            // 获取github 账号信息
+            function checkLogin() {
+                let username = getCookie("github_username");
+                let avatar = getCookie("github_avatar");
+                if (username && avatar) {
+                    // 获取到 说明已经登录
+                    let github_info = document.getElementById("github-info");
+                    github_info.innerHTML = `<img class="github-image"
+                     src=${avatar}>
+                    <span class="github-name">${username}</span>`;
+
+                    // 已经登录 移除输入框只读属性
+                    let input = document.getElementById("veditor");
+                    input.removeAttribute("readonly")
+                }
+
+
+            }
+
+            // 检测输入
+            function inputTextChange() {
+                let input = document.getElementById("veditor");
+                // 防抖监听输入事件
+                input.addEventListener("input", debounce(() => {
+                    let inputLen = input.value.length;
+                    let surplus = 100 - inputLen;
+                    let valueTip = document.getElementById("valueLen");
+
+                    if (surplus >= 1) {
+                        valueTip.innerHTML = `还能输入 ${surplus} 字`
+                    } else {
+                        valueTip.innerHTML = `已经超过100字，将截取前100字`
+                    }
+
+                }, 500), false)
+            }
+
+            // 提交评论数据
+            function commitReply() {
+                let username = getCookie("github_username");
+                let avatar = getCookie("github_avatar");
+
+                let commit_btn = document.getElementById("commit");
+
+                commit_btn.addEventListener("click", debounce(() => {
+                    if (username && avatar) {
+                        // 获取textarea对象
+                        let inputValue = document.getElementById("veditor");
+
+                        // 过滤数据
+                        inputValue = clearValue(inputValue.value);
+                        if (inputValue.length >= 2) {
+                            // 发送post请求
+                            submitCommit(username, inputValue, replayTip);
+                            // 将textarea 值置为空
+                            document.getElementById("veditor").value = "";
+                            // 重新加载评论
+                            loadCommit()
+                        }
+
+                    } else {
+                        alert("请登录后在输入")
+                    }
+                }, 500), false);
+            }
+
+            // 获取评论
+            function loadCommit() {
+                let article_url = window.location.pathname.split("/").pop();
+
+                requests(
+                    "/article/comment/",
+                    "GET",
+                    {
+                        article_url: article_url
+                    }
+                ).then((data) => {
+                    if (data.code === 200) {
+                        // 获取到评论框对象
+                        let commit = document.getElementById("show-commit");
+                        // 每次加载评论前先置为空
+                        commit.innerHTML = "";
+                        let strTemp = "";
+
+                        for (let i of data.data) {
+                            // 处理GitHub头像加载失败
+                            let onerrorImg = i.userInfo.avatar.replace(/avatars\d/, 'avatars3');
+
+                            strTemp += `<div class="comments-item">
+                                    <div class="comment-user-head">
+                                    <img src="${i.userInfo.avatar}" onerror="imgerrorfun("${onerrorImg}");">
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-body">
+                                            ${i.content}
+                                        </div>
+                                        <div class="comment-time">
+                                            <a href="${i.userInfo.github_add}" target="_blank">${i.userInfo.username}</a>
+                                            ${i.time}
+                                            <span id="reply" style="padding: 3px;color: #00a8c6">
+                                                回复
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>`
+                        }
+                        commit.innerHTML = strTemp;
+                    }
+
+                })
+            }
+
+            // 回调后的提示信息
+            function replayTip(code) {
+                // replyTipSpan
+                let tip = document.getElementById("replyTipSpan");
+                if (code === 200) {
+                    tip.innerHTML = `<span style='color:#67C23A'>评论成功</span>`
+                } else {
+                    tip.innerHTML = `<span style='color:#F56C6C'>评论失败</span>`
+                }
+                // 清理提示
+                setTimeout(() => {
+                    tip.innerHTML = ""
+                }, 8000)
+            }
+
+            // 图片加载失败后处理函数
+            function imgerrorfun(onerrorImg) {
+                let img = event.srcElement;
+                img.src = onerrorImg;
+                img.onerror = null; // 把传递的onerror事件取消,控制不要一直跳动
+            }
+
+            // 加载请求
+            loadCommit();
+
+            // 检测登录
+            checkLogin();
+
+            // 输入框提示改变
+            inputTextChange();
+
+            // 提交回复
+            commitReply();
+
+
+        </script>
+    </main>
+{% endblock %}

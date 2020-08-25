@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}分类统计 | {% endblock %}
+{% load custom_tag %}
+{% load static %}
+{% block banner %}
+<div class="bg-cover pd-header about-cover">
+    {% include 'banner.html' %}
+</div>
+{% endblock %}
+
+{% block custom_style%}
+    <style>
+        .category-1{
+            background-color: #F9EBEA;
+        }
+
+        .category-2{
+            background-color: #F5EEF8;
+        }
+
+        .category-3{
+            background-color: #D5F5E3;
+        }
+
+        .category-4{
+            background-color: #E8F8F5;
+        }
+        .category-5{
+            background-color: #ddf9e7;
+        }
+
+        .category-6{
+            background-color: #d2d6f8;
+        }
+
+        .category-7{
+            background-color: #f5deba;
+        }
+
+        .category-8{
+            background-color: #f8f6c8;
+        }
+
+        .category-9{
+            background-color: #d8f5c1;
+        }
+
+        .category-10{
+            background-color: #def8f8;
+        }
+
+    </style>
+{% endblock %}
+
+{% block contents %}
+<main class="content" style="min-height: 783px;">
+
+
+
+<div id="category-cloud" class="container chip-container">
+    <div class="card">
+        <div class="card-content">
+            <div class="tag-title center-align">
+                <i class="fas fa-bookmark"></i>&nbsp;&nbsp;文章分类
+            </div>
+            <div class="tag-chips">
+                {% for category in categories %}
+                <a href="{% url 'article_category' category.name_url %}" title="Others: 29">
+                    <span class="chip center-align waves-effect waves-light
+                             chip-default category-{% random_num %}">{{ category.name }}
+                        <span class="tag-length">{{ category.article_set.all | length }}</span>
+                    </span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <style type="text/css">
+    #category-radar {
+        width: 100%;
+        height: 360px;
+    }
+</style>
+
+<div class="container aos-init aos-animate" data-aos="fade-up">
+    <div class="card">
+        <div id="category-radar" class="card-content" style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;" _echarts_instance_="ec_1583738871510"><div style="position: relative; overflow: hidden; width: 1077px; height: 312px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="2154" height="624" style="position: absolute; left: 0px; top: 0px; width: 1077px; height: 312px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div></div></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js/echarts.min.js' %}"></script>
+<script type="text/javascript">
+    let radarChart = echarts.init(document.getElementById('category-radar'));
+
+    let option = {
+        title: {
+            left: 'center',
+            text: '文章分类雷达图',
+            textStyle: {
+                fontWeight: 500,
+                fontSize: 22
+            }
+        },
+        tooltip: {},
+        radar: {
+            name: {
+                textStyle: {
+                    color: '#3C4858'
+                }
+            },
+            indicator: [{% for category in categories %}{"name":"{{ category.name }}","max":25},{% endfor %}],
+            nameGap: 5,
+            center: ['50%','55%'],
+            radius: '66%'
+        },
+        series: [{
+            type: 'radar',
+            color: ['#3ecf8e'],
+            itemStyle: {normal: {areaStyle: {type: 'default'}}},
+            data : [
+                {
+                    value : [{% for category in categories %}{{ category.article_set.all | length }},{% endfor %}],
+                    name : '文章分类数量'
+                }
+            ]
+        }]
+    };
+
+    radarChart.setOption(option);
+</script>
+
+
+</main>
+{% endblock %}

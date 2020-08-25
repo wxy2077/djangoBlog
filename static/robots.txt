@@ -1,0 +1,11 @@
+# hello! If you would like to crawl this site contact us at wg_python@163.com.
+
+User-agent: *
+Disallow: /xauth*
+Disallow: /admin*
+Disallow: /xadmin*
+Disallow: /xxadmin*
+Disallow: /xxxadmin*
+Disallow: /xxxxadmin*
+Disallow: /xxxxxadmin*
+Disallow: /xxxxxxadmin*

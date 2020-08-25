@@ -1,0 +1,380 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    {% if article.desc %}
+        <meta name="keywords" content="{{ article.seo_meta_key }}">
+        <meta name="description" content="{{ article.desc }}">
+    {% else %}
+        <meta name="keywords" content="{{ SITE_META_KEYWORDS }}">
+        <meta name="description" content="{{ SITE_META_DESCRIPTION }}">
+    {% endif %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{% block title %}{% endblock %}{{ SITE_NAME }}</title>
+    <link rel="icon" type="image/png" href="/favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="/static/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/my.css">
+    {% block css %}{% endblock %}
+    {% block js %}{% endblock %}
+    <script src="/static/js/jquery-2.2.0.min.js">
+    </script>
+    <script>
+        {#  百度统计代码位  #}
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?e7bbc18b79ccde192c7c328e19e6682c";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+</head>
+<body>
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    <img src="/static/logo.png" class="logo-img" alt="LOGO">
+                    <span class="logo-span">{{ SITE_NAME }}</span>
+                </a>
+            </div>
+            <a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+            <ul class="right nav-menu">
+                <li class="hide-on-med-and-down nav-item">
+                    <a href="/" class="waves-effect waves-light">
+                        <i class="fas fa-home" style="zoom: 0.6;"></i>
+                        <span>首页</span>
+                    </a>
+                </li>
+                <li class="hide-on-med-and-down nav-item">
+                    <a href="/category/" class="waves-effect waves-light">
+                        <i class="fa fa-archive" style="zoom: 0.6;"></i>
+                        <span>分类</span>
+                    </a>
+                </li>
+
+                <li class="hide-on-med-and-down nav-item">
+                    <a href="/tag/" class="waves-effect waves-light">
+                        <i class="fa fa fa-tags" style="zoom: 0.6;"></i>
+                        <span>标签</span>
+                    </a>
+                </li>
+
+                <li class="hide-on-med-and-down nav-item">
+                    <a href="/article/" class="waves-effect waves-light">
+                        <i class="far fa-calendar-alt" style="zoom: 0.6;"></i>
+                        <span>归档</span>
+                    </a>
+                </li>
+
+                <li class="hide-on-med-and-down nav-item">
+                    <a href="/about/" class="waves-effect waves-light">
+                        <i class="fas fa-user-circle" style="zoom: 0.6;"></i><span>关于</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+                        <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- 手机菜单栏 -->
+            <div id="mobile-nav" class="side-nav sidenav">
+                <div class="mobile-head bg-color">
+                    <img src="{{ SITE_AVATAR }}"
+                         class="logo-img circle responsive-img">
+                    <div class="logo-name">{{ SITE_NAME }}</div>
+                    <div class="logo-desc">
+                        分享好文
+                    </div>
+                </div>
+                <ul class="menu-list mobile-menu-list">
+
+                    <li class="m-nav-item">
+                        <a href="/" class="waves-effect waves-light">
+                            <i class="fa-fw fas fa-home"></i>
+                            <span>首页</span>
+                        </a>
+                    </li>
+
+                    <li class="m-nav-item">
+                        <a href="/category/" class="waves-effect waves-light">
+                            <i class="fa-fw fas fa-archive"></i>
+                            <span>分类</span>
+                        </a>
+                    </li>
+
+                    <li class="m-nav-item">
+                        <a href="/tag/" class="waves-effect waves-light">
+                            <i class="fa-fw fas fa-tags"></i>
+                            <span>标签</span>
+                        </a>
+                    </li>
+
+                    <li class="m-nav-item">
+                        <a href="/article/" class="waves-effect waves-light">
+                            <i class="fa-fw fas fa-calendar-alt"></i>
+                            <span>归档</span>
+                        </a>
+                    </li>
+
+                    <li class="m-nav-item">
+                        <a href="/about/" class="waves-effect waves-light">
+                            <i class="fas fa-user-circle"></i>
+                            <span>关于</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+{% block custom_style %}
+    <style>
+        .carousel-control {
+            width: 45px;
+            height: 45px;
+            line-height: 55px;
+            border-radius: 45px;
+            background: transparent;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        #prev-cover {
+            position: absolute;
+            top: 48%;
+            left: 8px;
+        }
+
+        #next-cover {
+            position: absolute;
+            top: 48%;
+            right: 8px;;
+        }
+
+        #prev-cover i {
+            margin-right: 3px;
+        }
+
+        #next-cover i {
+            margin-left: 3px;
+        }
+
+        .carousel-control:hover {
+            background-color: rgba(0, 0, 0, .4);
+        }
+
+        .carousel-control i {
+            color: #fff;
+            font-size: 2.4rem;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        #page {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block banner %}
+{% endblock %}
+
+<script>
+    $(function () {
+        let coverSlider = $('.carousel');
+        coverSlider.carousel({
+            duration: Number('120'),
+            fullWidth: true,
+            indicators: 'false' === 'true'
+        });
+
+        let carouselIntervalId;
+        let restartPlay = function () {
+        };
+    });
+</script>
+
+{% block contents %}
+{% endblock %}
+
+
+<!-- 翻页按钮 -->
+{% block pagination %}
+{% endblock %}
+
+<!-- 页脚 -->
+<footer class="page-footer bg-color">
+    <div class="container row center-align"
+         style="display: flex; justify-content: center; align-content: center; margin: 10px auto">
+
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">{{ SITE_YEAR }}</span>
+            <a href="#" target="_blank">{{ SITE_HOME_TITLE }}</a>
+            |&nbsp;本站点由&nbsp;<a href="https://www.djangoproject.com/" target="_blank" rel="nofollow">Django</a> 强力驱动
+            |&nbsp;主题&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank"
+                              rel="nofollow">Matery</a>
+            <br>
+            <span>联系邮箱: {{ SITE_MAIL }}</span>&nbsp;&nbsp;
+            <span id="icp"><img src="{% static 'medias/icp.png' %}" style="vertical-align: text-bottom;"/>
+                <a href="{{ SITE_ICP_URL }}" target="_blank" rel="nofollow">{{ SITE_ICP }}</a>
+            </span>
+
+        </div>
+
+
+    </div>
+</footer>
+
+<!-- 滚动进度条 -->
+<div class="progress-bar"></div>
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <i class="fas fa-search">搜索</i>&nbsp;&nbsp;<span class="title" id="searchSpan">鼠标离开输入框自动请求</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+{#<script src="/static/js/search.js"></script>#}
+<script type="text/javascript">
+    /**
+     * @desc: 获取cookie字段
+     * @author: CoderCharm
+     * @time: 2020/4/27
+     * @param c_name 待获取的cookie字段名称
+     * */
+    function getCookie(c_name) {
+        if (document.cookie.length > 0) {
+            let c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start !== -1) {
+                c_start = c_start + c_name.length + 1;
+                let c_end = document.cookie.indexOf(";", c_start);
+                if (c_end === -1) c_end = document.cookie.length;
+                return unescape(document.cookie.substring(c_start, c_end));
+            }
+        }
+        return "";
+    }
+     /**
+     *
+     * 防抖工具函数
+     *
+     * */
+    function debounce(fun, delay) {
+        return function (args) {
+            let that = this;
+            let _args = args;
+            clearTimeout(fun.id);
+            fun.id = setTimeout(function () {
+                fun.call(that, _args)
+            }, delay)
+        }
+    }
+
+    /**
+     * @desc: 查询
+     * @author: CoderCharm
+     * @time: 2020/4/27
+     * @param data 查询的信息
+     * */
+    function loadSearch(data) {
+        fetch('/search/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json()).then(res => {
+
+            if(res.code === 200){
+                let searchSpan = document.getElementById("searchSpan");
+                let resLen = res.data.articleList.length;
+                if( resLen <= 0) {
+                    searchSpan.innerHTML = `<span style='color:#F56C6C'>没有搜到关于&nbsp;&nbsp;${data.searchKey}&nbsp;&nbsp;的内容</span>`
+                    return
+                }else{
+                    searchSpan.innerHTML = `<span style='color:#67C23A'>搜到&nbsp;&nbsp;${data.searchKey}&nbsp;&nbsp;约&nbsp;&nbsp;${resLen}&nbsp;&nbsp;条内容</span>`
+                }
+                let strTemp = `<ul class="search-result-list">`;
+                for(let i of res.data.articleList){
+                    console.log(i)
+                    strTemp += `<li><a href="/article/${i.article_url}" target="_blank">${i.title} &nbsp;&nbsp;<span>${i.add_time}</span></li>`
+
+                }
+            strTemp += "</ul>";
+            $resultContent.innerHTML = strTemp;
+            }
+
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+
+    }
+
+    // 搜索框函数
+    let searchInput = document.getElementById("searchInput");
+    let $resultContent = document.getElementById("searchResult");
+
+    // 设置输入自动搜索 500毫秒防抖
+     searchInput.addEventListener("input", debounce(() => {
+         let searchKey = searchInput.value;
+         if(searchKey.length >= 1){
+             loadSearch({searchKey})
+         }else{
+             console.log("搜索key为空")
+         }
+
+     }, 500), false);
+
+
+
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+<script src="/static/js/materialize.min.js"></script>
+<script src="/static/js/masonry.pkgd.min.js"></script>
+<script src="/static/js/scrollProgress.min.js"></script>
+<script src="/static/js/lightgallery-all.min.js"></script>
+<script src="/static/js/matery.js"></script>
+<script src="/static/js/clicklove.js" async="async"></script>
+<script src="/static/js/prism.js"></script>
+<script>
+    $('.bg-cover').css('background-image', 'url(/static/image/0.jpg)');
+</script>
+</body>
+</html>

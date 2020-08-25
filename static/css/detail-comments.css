@@ -1,0 +1,120 @@
+
+.comment_headling {
+    padding: 2px 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.github-icon svg {
+    width: 25px;
+    height: 25px;
+    position: relative;
+    top: 3px;
+}
+
+/* github 头像 */
+#github-info .github-image{
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+}
+#github-info .github-name{
+   position: relative;
+    top: -12px;
+}
+
+#veditor{
+    height: 100px;
+    width: 100%;
+    resize:none;
+    overflow: hidden;
+
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    padding: 10px;
+    line-height: 1.5;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px #999;
+}
+
+.comments-list {
+    margin-top: 30px;
+    /*background-color: #cccccc;*/
+}
+
+.comments-item {
+    display: flex;
+    margin-top: 10px;
+}
+
+.comment-user-head img {
+    width: 45px;
+    height: 45px;
+    margin-right: 10px;
+}
+
+.comment-content {
+    flex: 1;
+    /*height: 50px;*/
+    position: relative;
+    background: #f0f9ff;
+    border-radius: 6px;
+}
+
+#commit{
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: #CCC; /* Green */
+    border: none;
+    color: #000;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+
+/* 评论小气泡效果 */
+.comment-content::after, .comment-content::before {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: "";
+    height: 0;
+    width: 0;
+    pointer-events: none;
+}
+
+.comment-content::after {
+    border-right-color: #f0f9ff;
+    border-width: 10px;
+    margin-top: -10px;
+}
+
+.comment-content::before {
+    border-right-color: #bdc3c6;
+    border-width: 10px;
+    margin-top: -10px;
+}
+
+.comment-content{
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.comment-body{
+    flex: 1;
+}
+.comment-time{
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+#reply{
+    border: none;
+    cursor: pointer;
+}
+
